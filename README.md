@@ -33,6 +33,10 @@ I am using GPUs with computation capability equivalent to Nvidia V100 with 16GB 
 
 I made a slight modification, instead of guess the next letter I am using the gpt2 token. The training process can be viewed in the [Tensorboard](Naive_Shakespeare/tensorboard). A single GPU slurm files is also provided for uploading to HPC.
 
+## Distributed Shakspeare
+
+This is simply naive Shakespeare with distributed code added. The code in .slurm file now uses 2 nodes each with 4 GPU, you can adjust the number if you want
+
 ## Acknowledgements
 
 Special thanks to Andrej Karpathy for the insightful and detailed tutorial on GPT models.
