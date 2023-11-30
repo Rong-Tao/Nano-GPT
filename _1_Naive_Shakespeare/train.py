@@ -22,7 +22,7 @@ result_dir = args.output_log
 ################################################################
 blobpath = "https://openaipublic.blob.core.windows.net/gpt-2/encodings/main/vocab.bpe"
 cache_key = hashlib.sha1(blobpath.encode()).hexdigest()
-tiktoken_cache_dir = "./tiktoken_cache"
+tiktoken_cache_dir = "../tiktoken_cache"
 os.environ["TIKTOKEN_CACHE_DIR"] = tiktoken_cache_dir
 assert os.path.exists(os.path.join(tiktoken_cache_dir, cache_key))
 
@@ -31,7 +31,7 @@ enc = tiktoken.get_encoding("gpt2")
 #                       Parameters                             #
 ################################################################
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-with open('input.txt', 'r', encoding='utf-8') as f:
+with open('../input.txt', 'r', encoding='utf-8') as f:
     text = f.read()
 
 encode = enc.encode
