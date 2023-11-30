@@ -19,6 +19,7 @@ Through this project, I aim to achieve the following learning outcomes:
 - Understanding the architecture of GPT models.
 - Implementing the model in Python.
 - Grasping the training and fine-tuning processes of language models.
+- Distibutive training and fine-tuning
 
 ## How to Use This Repository
 
