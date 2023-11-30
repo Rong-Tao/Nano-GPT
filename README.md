@@ -27,10 +27,11 @@ This repository contains code, notes, and other relevant resources related to th
 1. Clone the repository.
 2. Explore the code and accompanying documentation.
 3. Refer to the original tutorial for a comprehensive understanding.
+I am using GPUs with computation capability equivalent to Nvidia V100 with 16GB VRAM.
 
-## Contributing
+## Naive Shakspeare
 
-As this is a personal learning project, I am not actively seeking contributions. However, suggestions and feedback are always welcome.
+I made a slight modification, instead of guess the next letter I am using the gpt2 token. The training process can be viewed in the [Tensorboard](Naive_Shakespeare/tensorboard). A single GPU slurm files is also provided for uploading to HPC.
 
 ## Acknowledgements
 
