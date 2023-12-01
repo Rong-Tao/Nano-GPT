@@ -26,6 +26,7 @@ def epoch_logger_saver(model, writer, epoch, mean_trainloss, validation_loss, be
         model_save_path = os.path.join(state_dict_dir, f"epoch_{epoch}.pth")
         torch.save(model.state_dict(), model_save_path)
     return best_loss
+
 def arg():
     parser = argparse.ArgumentParser(description='Pass log directories to main script.') 
     parser.add_argument('--output_log', type=str, help='Path to the output log directory.')

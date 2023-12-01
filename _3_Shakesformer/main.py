@@ -4,6 +4,7 @@ import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.distributed.elastic.multiprocessing.errors import record
 import os
+import tiktoken, hashlib
 
 ## Import our own scrips ##
 
@@ -24,6 +25,13 @@ rank, world_size = init_distributed_mode()
 
 if rank == 0:
     result_dir, state_dict_dir, tensor_bd_dir = arg()
+    blobpath = "https://openaipublic.blob.core.windows.net/gpt-2/encodings/main/vocab.bpe"
+    cache_key = hashlib.sha1(blobpath.encode()).hexdigest()
+    tiktoken_cache_dir = "../tiktoken_cache"
+    os.environ["TIKTOKEN_CACHE_DIR"] = tiktoken_cache_dir
+    assert os.path.exists(os.path.join(tiktoken_cache_dir, cache_key))
+    enc = tiktoken.get_encoding("gpt2")
+
 
 # Training
 def train(rank, world_size):
@@ -39,6 +47,7 @@ def train(rank, world_size):
         writer = SummaryWriter(log_dir=tensor_bd_dir)
 
     for epoch in range(EPOCH_NUM):
+        model.train()
         train_loss = 0.0
         for batch_idx, (img, gt) in enumerate(train_loader):
             img, gt = img.cuda(), gt.cuda()
@@ -52,6 +61,11 @@ def train(rank, world_size):
 
             if rank == 0:
                 batch_logger(writer, batch_idx, epoch * len(train_loader) + batch_idx, loss.item())
+                if batch_idx % 100 == 0:
+                    initial_tokens = torch.tensor([[...]], dtype=torch.long).cuda()  # Start token(s)
+                    generated_sequence = model.module.generate(initial_tokens, max_length=30)
+                    generated_text = enc.decode(generated_sequence[0].cpu().numpy())
+                    writer.add_text('Poem', generated_text, epoch * len(train_loader) + batch_idx)
 
         model.eval()
         validation_loss = 0.0

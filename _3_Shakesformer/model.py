@@ -37,3 +37,17 @@ class Model_Class(torch.nn.Module):
 
         # Apply the output linear layer
         return self.output_layer(transformer_output)
+    
+    def generate(self, initial_tokens, max_length):
+        self.eval()  # Ensure the model is in evaluation mode
+        generated = initial_tokens
+        for _ in range(max_length - len(initial_tokens)):
+            with torch.no_grad():
+                logits = self.forward(generated)  # Assuming forward returns logits
+                next_token_logits = logits[-1, :]
+                next_token = torch.argmax(next_token_logits).unsqueeze(0)
+                generated = torch.cat((generated, next_token.unsqueeze(0)), dim=1)
+            if next_token.item() == ...:  # End token ID (if applicable)
+                break
+        self.train()
+        return generated
