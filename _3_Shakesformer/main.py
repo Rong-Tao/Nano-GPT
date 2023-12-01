@@ -35,7 +35,7 @@ if rank == 0:
 
 # Training
 def train(rank, world_size):
-    model = Model_Class.cuda()
+    model = Model_Class().cuda()
     model = DDP(model)
     optimizer, scheduler = get_optimizer(model)
     train_loader, validation_loader = get_loaders(world_size, rank, BATCH_SIZE, TRAIN_VAL_RATIO)
