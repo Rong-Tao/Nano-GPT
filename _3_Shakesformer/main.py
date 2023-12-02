@@ -49,10 +49,10 @@ def train(rank, world_size):
     for epoch in range(EPOCH_NUM):
         model.train()
         train_loss = 0.0
-        for batch_idx, (img, gt) in enumerate(train_loader):
-            img, gt = img.cuda(), gt.cuda()
-            out = model(img)
-            loss = criterion(out, gt)
+        for batch_idx, (input, gt) in enumerate(train_loader):
+            input, gt = input.cuda(), gt.cuda()
+            out = model(input, input) # Out = [Batch, Seq_length, vocab]
+            loss = criterion(out.transpose(1, 2), gt)
 
             optimizer.zero_grad(set_to_none=True)
             loss.backward()
@@ -62,17 +62,18 @@ def train(rank, world_size):
             if rank == 0:
                 batch_logger(writer, batch_idx, epoch * len(train_loader) + batch_idx, loss.item())
                 if batch_idx % 100 == 0:
-                    initial_tokens = torch.tensor([[...]], dtype=torch.long).cuda()  # Start token(s)
-                    generated_sequence = model.module.generate(initial_tokens, max_length=30)
-                    generated_text = enc.decode(generated_sequence[0].cpu().numpy())
+                    initial_tokens = torch.randint(0, enc.n_vocab, (1, 1), dtype=torch.long).cuda()
+                    generated_sequence = model.module.generate(initial_tokens, max_length=32)
+                    generated_sequence = generated_sequence.squeeze().cpu().numpy()
+                    generated_text = enc.decode(generated_sequence)
                     writer.add_text('Poem', generated_text, epoch * len(train_loader) + batch_idx)
 
         model.eval()
         validation_loss = 0.0
         with torch.no_grad():
-            for val_batch_idx, (val_img, val_gt) in enumerate(validation_loader):
-                val_img, val_gt = val_img.cuda(), val_gt.cuda()
-                val_out = model(val_img)
+            for val_batch_idx, (val_input, val_gt) in enumerate(validation_loader):
+                val_input, val_gt = val_input.cuda(), val_gt.cuda()
+                val_out = model(val_input)
                 val_loss = criterion(val_out, val_gt)
                 validation_loss += val_loss.item()
 

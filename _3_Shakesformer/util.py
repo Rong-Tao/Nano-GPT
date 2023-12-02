@@ -4,7 +4,7 @@ import torch
 import torch.optim as optim
 
 BATCH_SIZE = 64
-EPOCH_NUM = 10
+EPOCH_NUM = 20
 TRAIN_VAL_RATIO = 0.9 # 0-1
 
 criterion = torch.nn.CrossEntropyLoss()
@@ -15,7 +15,7 @@ def get_optimizer(model):
     return optimizer, scheduler
 
 def batch_logger(writer, batch_idx, step_num, loss):
-    writer.add_scalar('Batch Training Loss', loss.item(), step_num)
+    writer.add_scalar('Batch Training Loss', loss, step_num)
     #add extra if you want
 
 def epoch_logger_saver(model, writer, epoch, mean_trainloss, validation_loss, best_loss, state_dict_dir):

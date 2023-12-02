@@ -43,11 +43,9 @@ class Model_Class(torch.nn.Module):
         generated = initial_tokens
         for _ in range(max_length - len(initial_tokens)):
             with torch.no_grad():
-                logits = self.forward(generated)  # Assuming forward returns logits
-                next_token_logits = logits[-1, :]
-                next_token = torch.argmax(next_token_logits).unsqueeze(0)
-                generated = torch.cat((generated, next_token.unsqueeze(0)), dim=1)
-            if next_token.item() == ...:  # End token ID (if applicable)
-                break
+                logits = self.forward(generated, generated)  # Assuming forward returns logits
+                probabilities = F.softmax(logits[:, -1, :], dim=-1)  # Convert logits to probabilities
+                next_token = torch.multinomial(probabilities, num_samples=1)  # Sample from the probability distribution
+                generated = torch.cat((generated, next_token), dim=1)
         self.train()
         return generated
